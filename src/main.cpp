@@ -25,24 +25,32 @@
 // (currently OS_USE_TRACE_ITM, OS_USE_TRACE_SEMIHOSTING_DEBUG/_STDOUT).
 //
 
+struct ledCfg {
+	GPIO_TypeDef* port;
+	uint16_t      pin;
+	uint32_t      mstime;
+};
+
 static void ledBlinkTask( void *pvParameters )
 {
 	// Configure Pins
 	GPIO_InitTypeDef GPIO_InitStructure;
 	GPIO_StructInit(&GPIO_InitStructure);
 
-	// Configure C13 (LED) for output
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
+	struct ledCfg* cfg = (struct ledCfg*)pvParameters;
+
+	GPIO_InitStructure.GPIO_Pin = cfg->pin;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_Init(cfg->port, &GPIO_InitStructure);
+
+    int ledval = 1;
 
 	while (1) {
-	  static int ledval = 0;
-	  GPIO_WriteBit(GPIOC, GPIO_Pin_13, (ledval) ? Bit_SET : Bit_RESET);
+	  GPIO_WriteBit(cfg->port, cfg->pin, (ledval) ? Bit_SET : Bit_RESET);
 	  ledval = 1 - ledval;
 
-	  vTaskDelay(500 / portTICK_PERIOD_MS);
+	  vTaskDelay(cfg->mstime / portTICK_PERIOD_MS);
 
 	}
 }
@@ -64,10 +72,17 @@ main(int argc, char* argv[])
   // At this stage the system clock should have already been configured
   // at high speed.
 
-  xTaskCreate(ledBlinkTask, "LED", 200, NULL, 10, NULL);
+  static struct ledCfg led[2] = {
+	  {GPIOC, GPIO_Pin_13, 500U},
+	  {GPIOB, GPIO_Pin_15, 750U}
+  };
+
+  xTaskCreate(ledBlinkTask, "LED1", 400, &led[0], 10, NULL);
+  xTaskCreate(ledBlinkTask, "LED2", 400, &led[1], 9, NULL);
 
   vTaskStartScheduler();
 
+  while (1) { /* Keep running */ };
   return 0;
 }
 

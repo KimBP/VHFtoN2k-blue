@@ -54,6 +54,7 @@ void setupHardware() {
 //													| RCC_APB2Periph_GPIOD | RCC_APB2Periph_GPIOE | RCC_APB2Periph_AFIO, ENABLE );
 
 	// KBP new
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // Port B
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE); // Port C
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);  // Alternate functions
 
