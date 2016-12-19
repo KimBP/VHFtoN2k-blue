@@ -20,7 +20,7 @@ void setupHardware() {
 	//while (RCC_GetFlagStatus(RCC_FLAG_HSERDY) == RESET);
 
 	/* HCLK = SYSCLK. */
-	RCC_HCLKConfig( RCC_SYSCLK_Div1 );
+	//RCC_HCLKConfig( RCC_SYSCLK_Div1 );
 
 	/* PCLK2  = HCLK. */
 	//RCC_PCLK2Config( RCC_HCLK_Div1 );
@@ -59,11 +59,11 @@ void setupHardware() {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);  // Alternate functions
 
 	/* Set the Vector Table base address at 0x08000000. */
-	NVIC_SetVectorTable( NVIC_VectTab_FLASH, 0x0 );
+	//NVIC_SetVectorTable( NVIC_VectTab_FLASH, 0x0 );
 	NVIC_PriorityGroupConfig( NVIC_PriorityGroup_4 );
 
 	/* Configure HCLK clock as SysTick clock source. */
-	SysTick_CLKSourceConfig( SysTick_CLKSource_HCLK );
+	//SysTick_CLKSourceConfig( SysTick_CLKSource_HCLK );
 
 	/* Initialise the IO used for the LED outputs. */
 	//vParTestInitialise();
