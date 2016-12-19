@@ -77,7 +77,8 @@
 #include "semphr.h"
 
 /* Library includes. */
-#include "stm32f10x_lib.h"
+#include <stm32f10x_usart.h>
+#include <misc.h>
 
 /* Demo application includes. */
 #include "serial.h"
@@ -97,7 +98,7 @@ static QueueHandle_t xCharsForTx;
 /*-----------------------------------------------------------*/
 
 /* UART interrupt handler. */
-void vUARTInterruptHandler( void );
+void USART1_IRQHandler( void );
 
 /*-----------------------------------------------------------*/
 
@@ -106,14 +107,16 @@ void vUARTInterruptHandler( void );
  */
 xComPortHandle xSerialPortInitMinimal( unsigned long ulWantedBaud, unsigned portBASE_TYPE uxQueueLength )
 {
-xComPortHandle xReturn;
-USART_InitTypeDef USART_InitStructure;
-NVIC_InitTypeDef NVIC_InitStructure;
-GPIO_InitTypeDef GPIO_InitStructure;
+	xComPortHandle xReturn;
+	USART_InitTypeDef USART_InitStructure;
+	USART_ClockInitTypeDef USART_ClockInitStructure;
+
+	NVIC_InitTypeDef NVIC_InitStructure;
+	GPIO_InitTypeDef GPIO_InitStructure;
 
 	/* Create the queues used to hold Rx/Tx characters. */
-	xRxedChars = xQueueCreate( uxQueueLength, ( unsigned portBASE_TYPE ) sizeof( signed char ) );
-	xCharsForTx = xQueueCreate( uxQueueLength + 1, ( unsigned portBASE_TYPE ) sizeof( signed char ) );
+	xRxedChars = xQueueCreate( uxQueueLength, ( unsigned portBASE_TYPE ) sizeof( unsigned char ) );
+	xCharsForTx = xQueueCreate( uxQueueLength + 1, ( unsigned portBASE_TYPE ) sizeof( unsigned char ) );
 	
 	/* If the queue/semaphore was created correctly then setup the serial port
 	hardware. */
@@ -125,6 +128,7 @@ GPIO_InitTypeDef GPIO_InitStructure;
 		/* Configure USART1 Rx (PA10) as input floating */
 		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 		GPIO_Init( GPIOA, &GPIO_InitStructure );
 		
 		/* Configure USART1 Tx (PA9) as alternate function push-pull */
@@ -139,16 +143,18 @@ GPIO_InitTypeDef GPIO_InitStructure;
 		USART_InitStructure.USART_Parity = USART_Parity_No ;
 		USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 		USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-		USART_InitStructure.USART_Clock = USART_Clock_Disable;
-		USART_InitStructure.USART_CPOL = USART_CPOL_Low;
-		USART_InitStructure.USART_CPHA = USART_CPHA_2Edge;
-		USART_InitStructure.USART_LastBit = USART_LastBit_Disable;
-		
 		USART_Init( USART1, &USART_InitStructure );
+
+		USART_ClockStructInit(&USART_ClockInitStructure);
+		USART_ClockInitStructure.USART_Clock = USART_Clock_Disable;
+		USART_ClockInitStructure.USART_CPOL = USART_CPOL_Low;
+		USART_ClockInitStructure.USART_CPHA = USART_CPHA_2Edge;
+		USART_ClockInitStructure.USART_LastBit = USART_LastBit_Disable;
+		USART_ClockInit(USART1, &USART_ClockInitStructure);
 		
 		USART_ITConfig( USART1, USART_IT_RXNE, ENABLE );
 		
-		NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQChannel;
+		NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = configLIBRARY_KERNEL_INTERRUPT_PRIORITY;
 		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -167,7 +173,7 @@ GPIO_InitTypeDef GPIO_InitStructure;
 }
 /*-----------------------------------------------------------*/
 
-signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, signed char *pcRxedChar, TickType_t xBlockTime )
+signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, unsigned char *pcRxedChar, TickType_t xBlockTime )
 {
 	/* The port handle is not required as this driver only supports one port. */
 	( void ) pxPort;
@@ -185,9 +191,9 @@ signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, signed char *pcRxedC
 }
 /*-----------------------------------------------------------*/
 
-void vSerialPutString( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength )
+void vSerialPutString( xComPortHandle pxPort, const unsigned char * const pcString, unsigned short usStringLength )
 {
-signed char *pxNext;
+	unsigned char *pxNext;
 
 	/* A couple of parameters that this port does not use. */
 	( void ) usStringLength;
@@ -209,9 +215,12 @@ signed char *pxNext;
 }
 /*-----------------------------------------------------------*/
 
-signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, signed char cOutChar, TickType_t xBlockTime )
+signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, unsigned char cOutChar, TickType_t xBlockTime )
 {
-signed portBASE_TYPE xReturn;
+	signed portBASE_TYPE xReturn;
+
+	/* The port handle is not required as this driver only supports one port. */
+	( void ) pxPort;
 
 	if( xQueueSend( xCharsForTx, &cOutChar, xBlockTime ) == pdPASS )
 	{
@@ -227,16 +236,19 @@ signed portBASE_TYPE xReturn;
 }
 /*-----------------------------------------------------------*/
 
-void vSerialClose( xComPortHandle xPort )
+void vSerialClose( xComPortHandle pxPort )
 {
+	/* The port handle is not required as this driver only supports one port. */
+	( void ) pxPort;
+
 	/* Not supported as not required by the demo application. */
 }
 /*-----------------------------------------------------------*/
 
-void vUARTInterruptHandler( void )
+void USART1_IRQHandler( void )
 {
-portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
-char cChar;
+	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
+	unsigned char cChar;
 
 	if( USART_GetITStatus( USART1, USART_IT_TXE ) == SET )
 	{
@@ -263,8 +275,3 @@ char cChar;
 	portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
 }
 
-
-
-
-
-	
