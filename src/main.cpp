@@ -14,6 +14,8 @@
 #include <task.h>
 #include <hardware.h>
 
+#include <serial.h>
+
 // ----------------------------------------------------------------------------
 //
 // Semihosting STM32F1 empty sample (trace via DEBUG).
@@ -55,6 +57,32 @@ static void ledBlinkTask( void *pvParameters )
 	}
 }
 
+static unsigned char chConvCase(unsigned char ch)
+{
+	if ((ch >= 'a') && (ch <= 'z')) {
+		ch -= ('a'-'A');
+	} else if ((ch >= 'A') && (ch <= 'Z')) {
+		ch += ('a'-'A');
+	}
+	return ch;
+}
+
+static void uartComTask (void *pvParameters)
+{
+	(void) pvParameters;
+
+	xComPortHandle usart = xSerialPortInitMinimal(57600,100);
+
+	vSerialPutString(usart,(const unsigned char*)"Hello world\n",12);
+	while(1) {
+		unsigned char rcv;
+		if (pdTRUE == xSerialGetChar(usart, &rcv, 1000)) {
+			rcv = chConvCase(rcv);
+			xSerialPutChar(usart, rcv, 1000);
+		}
+	}
+}
+
 // ----- main() ---------------------------------------------------------------
 
 // Sample pragmas to cope with warnings. Please note the related line at
@@ -80,6 +108,7 @@ main(int argc, char* argv[])
   xTaskCreate(ledBlinkTask, "LED1", 400, &led[0], 10, NULL);
   xTaskCreate(ledBlinkTask, "LED2", 400, &led[1], 9, NULL);
 
+  xTaskCreate(uartComTask, "UART", 400, NULL, 11, NULL);
   vTaskStartScheduler();
 
   while (1) { /* Keep running */ };
