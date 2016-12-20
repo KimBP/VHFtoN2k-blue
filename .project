@@ -31,12 +31,45 @@
 			<locationURI>virtual:/virtual</locationURI>
 		</link>
 		<link>
+			<name>libraries</name>
+			<type>2</type>
+			<locationURI>virtual:/virtual</locationURI>
+		</link>
+		<link>
 			<name>FreeRTOS/Source</name>
 			<type>2</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/FreeRTOSv9.0.0/FreeRTOS/Source</locationURI>
 		</link>
+		<link>
+			<name>libraries/AIS</name>
+			<type>2</type>
+			<location>/home/kbp/engineering/stm32/libraries/AIS</location>
+		</link>
+		<link>
+			<name>libraries/NMEA0183</name>
+			<type>2</type>
+			<location>/home/kbp/engineering/stm32/libraries/NMEA0183</location>
+		</link>
 	</linkedResources>
 	<filteredResources>
+		<filter>
+			<id>1482174631286</id>
+			<name>libraries/AIS</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-examples</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1482174956205</id>
+			<name>libraries/NMEA0183</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-Examples</arguments>
+			</matcher>
+		</filter>
 		<filter>
 			<id>1481398184555</id>
 			<name>FreeRTOS/Source/portable</name>
