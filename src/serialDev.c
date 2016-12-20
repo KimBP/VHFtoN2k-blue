@@ -81,7 +81,7 @@
 #include <misc.h>
 
 /* Demo application includes. */
-#include "serial.h"
+#include <serialDev.h>
 /*-----------------------------------------------------------*/
 
 /* Misc defines. */
