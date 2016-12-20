@@ -235,6 +235,19 @@ signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, unsigned char cOutCh
 	return xReturn;
 }
 /*-----------------------------------------------------------*/
+signed portBASE_TYPE xSerialGetCharReady( xComPortHandle pxPort)
+{
+	(void) pxPort;
+	return (uxQueueMessagesWaiting(xRxedChars) > 0) ? pdTRUE : pdFALSE;
+}
+/*-----------------------------------------------------------*/
+
+signed portBASE_TYPE xSerialPutCharReady( xComPortHandle pxPort)
+{
+	(void) pxPort;
+	return (uxQueueSpacesAvailable(xCharsForTx) > 0 ) ? pdTRUE : pdFALSE;
+}
+/*-----------------------------------------------------------*/
 
 void vSerialClose( xComPortHandle pxPort )
 {

@@ -70,6 +70,9 @@
 #ifndef SERIAL_COMMS_H
 #define SERIAL_COMMS_H
 
+#include <FreeRTOS.h>
+
+
 #ifdef __cplusplus
  extern "C" {
 #endif
@@ -81,6 +84,9 @@ void vSerialPutString( xComPortHandle pxPort, const unsigned char * const pcStri
 signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, unsigned char *pcRxedChar, TickType_t xBlockTime );
 signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, unsigned char cOutChar, TickType_t xBlockTime );
 void vSerialClose( xComPortHandle xPort );
+
+signed portBASE_TYPE xSerialGetCharReady( xComPortHandle pxPort);
+signed portBASE_TYPE xSerialPutCharReady( xComPortHandle pxPort);
 
 #ifdef __cplusplus
 }
