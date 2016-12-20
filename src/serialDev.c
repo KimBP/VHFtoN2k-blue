@@ -193,7 +193,7 @@ signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, unsigned char *pcRxe
 
 void vSerialPutString( xComPortHandle pxPort, const unsigned char * const pcString, unsigned short usStringLength )
 {
-	unsigned char *pxNext;
+	const unsigned char *pxNext;
 
 	/* A couple of parameters that this port does not use. */
 	( void ) usStringLength;
@@ -206,7 +206,7 @@ void vSerialPutString( xComPortHandle pxPort, const unsigned char * const pcStri
 	( void ) pxPort;
 
 	/* Send each character in the string, one at a time. */
-	pxNext = ( signed char * ) pcString;
+	pxNext =  pcString;
 	while( *pxNext )
 	{
 		xSerialPutChar( pxPort, *pxNext, serNO_BLOCK );
