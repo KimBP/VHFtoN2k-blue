@@ -14,7 +14,7 @@
 #include <task.h>
 #include <hardware.h>
 
-#include <serial.h>
+#include <serialDev.h>
 
 // ----------------------------------------------------------------------------
 //
