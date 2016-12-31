@@ -98,12 +98,12 @@
 			</matcher>
 		</filter>
 		<filter>
-			<id>1481398211907</id>
+			<id>1483093595589</id>
 			<name>FreeRTOS/Source/portable/MemMang</name>
 			<type>5</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-heap_2.c</arguments>
+				<arguments>1.0-name-matches-false-false-heap_4.c</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>
