@@ -85,8 +85,8 @@ signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, unsigned char *pcRxe
 signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, unsigned char cOutChar, TickType_t xBlockTime );
 void vSerialClose( xComPortHandle xPort );
 
-signed portBASE_TYPE xSerialGetCharReady( xComPortHandle pxPort);
-signed portBASE_TYPE xSerialPutCharReady( xComPortHandle pxPort);
+unsigned long xSerialGetCharReady( xComPortHandle pxPort);
+unsigned long xSerialPutCharReady( xComPortHandle pxPort);
 
 #ifdef __cplusplus
 }

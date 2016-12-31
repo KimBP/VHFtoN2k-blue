@@ -80,7 +80,6 @@
 #include <stm32f10x_usart.h>
 #include <misc.h>
 
-/* Demo application includes. */
 #include <serialDev.h>
 /*-----------------------------------------------------------*/
 
@@ -235,17 +234,17 @@ signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, unsigned char cOutCh
 	return xReturn;
 }
 /*-----------------------------------------------------------*/
-signed portBASE_TYPE xSerialGetCharReady( xComPortHandle pxPort)
+unsigned long xSerialGetCharReady( xComPortHandle pxPort)
 {
 	(void) pxPort;
-	return (uxQueueMessagesWaiting(xRxedChars) > 0) ? pdTRUE : pdFALSE;
+	return uxQueueMessagesWaiting(xRxedChars);
 }
 /*-----------------------------------------------------------*/
 
-signed portBASE_TYPE xSerialPutCharReady( xComPortHandle pxPort)
+unsigned long xSerialPutCharReady( xComPortHandle pxPort)
 {
 	(void) pxPort;
-	return (uxQueueSpacesAvailable(xCharsForTx) > 0 ) ? pdTRUE : pdFALSE;
+	return uxQueueSpacesAvailable(xCharsForTx);
 }
 /*-----------------------------------------------------------*/
 
