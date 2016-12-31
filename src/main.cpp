@@ -1,8 +1,25 @@
-//
-// This file is part of the GNU ARM Eclipse distribution.
-// Copyright (c) 2014 Liviu Ionescu.
-//
-
+/*
+ * main.cpp
+ *
+ * 2016 Copyright (c) Kim Bøndergaard, www.fam-boendergaard.dk  All right reserved.
+ *
+ * Author: Kim Bøndergaard (kim@fam-boendergaard.dk)
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This module is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this module; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-
+ *  1301  USA
+ */
 // ----------------------------------------------------------------------------
 
 #include <FreeRTOS.h>
@@ -12,9 +29,13 @@
 
 #include <portmacro.h>
 #include <task.h>
+#include <queue.h>
 #include <hardware.h>
-
+#include <nmea0183Task.h>
 #include <serialDev.h>
+#include <nmea0183Handler.h>
+#include <nmea2000Task.h>
+#include <N2kMsg.h>
 
 // ----------------------------------------------------------------------------
 //
@@ -57,31 +78,6 @@ static void ledBlinkTask( void *pvParameters )
 	}
 }
 
-static unsigned char chConvCase(unsigned char ch)
-{
-	if ((ch >= 'a') && (ch <= 'z')) {
-		ch -= ('a'-'A');
-	} else if ((ch >= 'A') && (ch <= 'Z')) {
-		ch += ('a'-'A');
-	}
-	return ch;
-}
-
-static void uartComTask (void *pvParameters)
-{
-	(void) pvParameters;
-
-	xComPortHandle usart = xSerialPortInitMinimal(57600,100);
-
-	vSerialPutString(usart,(const unsigned char*)"Hello world\n",12);
-	while(1) {
-		unsigned char rcv;
-		if (pdTRUE == xSerialGetChar(usart, &rcv, 1000)) {
-			rcv = chConvCase(rcv);
-			xSerialPutChar(usart, rcv, 1000);
-		}
-	}
-}
 
 // ----- main() ---------------------------------------------------------------
 
@@ -102,13 +98,18 @@ main(int argc, char* argv[])
 
   static struct ledCfg led[2] = {
 	  {GPIOC, GPIO_Pin_13, 500U},
-	  {GPIOB, GPIO_Pin_15, 750U}
   };
 
   xTaskCreate(ledBlinkTask, "LED1", 400, &led[0], 10, NULL);
-  xTaskCreate(ledBlinkTask, "LED2", 400, &led[1], 9, NULL);
 
-  xTaskCreate(uartComTask, "UART", 400, NULL, 11, NULL);
+  struct nmea0183Task::Params params0183 = {
+		  nmea0183HandlerCb,
+		  NULL
+  };
+
+  xTaskCreate(nmea2000TaskEntry, "Nmea2000", 400, NULL, 10, NULL);
+  xTaskCreate(nmea0183TaskEntry, "Nmea0183", 400, (void* const) &params0183, 11, NULL);
+
   vTaskStartScheduler();
 
   while (1) { /* Keep running */ };
