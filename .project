@@ -46,6 +46,11 @@
 			<location>/home/kbp/engineering/stm32/libraries/AIS</location>
 		</link>
 		<link>
+			<name>libraries/CAN_BUS_Shield</name>
+			<type>2</type>
+			<location>/home/kbp/engineering/stm32/libraries/CAN_BUS_Shield</location>
+		</link>
+		<link>
 			<name>libraries/NMEA0183</name>
 			<type>2</type>
 			<location>/home/kbp/engineering/stm32/libraries/NMEA0183</location>
@@ -60,6 +65,15 @@
 		<filter>
 			<id>1482174631286</id>
 			<name>libraries/AIS</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-examples</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1482868626249</id>
+			<name>libraries/CAN_BUS_Shield</name>
 			<type>10</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
