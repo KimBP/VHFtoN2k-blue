@@ -50,6 +50,11 @@
 			<type>2</type>
 			<location>/home/kbp/engineering/stm32/libraries/NMEA0183</location>
 		</link>
+		<link>
+			<name>libraries/NMEA2000</name>
+			<type>2</type>
+			<location>/home/kbp/engineering/stm32/libraries/NMEA2000</location>
+		</link>
 	</linkedResources>
 	<filteredResources>
 		<filter>
@@ -68,6 +73,24 @@
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-false-Examples</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1482661364642</id>
+			<name>libraries/NMEA2000</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-Examples</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1482661364668</id>
+			<name>libraries/NMEA2000</name>
+			<type>6</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-ActisenseReader*</arguments>
 			</matcher>
 		</filter>
 		<filter>
