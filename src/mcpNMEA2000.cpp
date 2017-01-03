@@ -191,6 +191,7 @@ void mcpNMEA2000::isrTaskRun()
 
 		if (stat & MCP_STAT_RX0IF) {
 			mcp.readMsgUnconditional(rxBufNo); // Ignore result - we'll always have a packet
+			mcp.clearInterrupt(MCP_RX0IF);
 			frame.id = mcp.getCanId();
 			mcp.getData(&frame.dlc, frame.data);
 
@@ -198,21 +199,22 @@ void mcpNMEA2000::isrTaskRun()
 		}
 
 		if (stat & MCP_STAT_TX0IF) {
+			mcp.clearInterrupt(MCP_TX0IF);
 			if (pdTRUE == xQueueReceive(canOutQ, &frame, 0)) {
 				// We have data to send
 				mcp.sendMsgBufUnconditional(txBufNo,frame.id, isExtId, frame.dlc, frame.data);
 			} else {
 				// No data to send - disable TX-Empty interrupt
 				mcp.disableInterrupt(MCP_TX0IF);
-				mcp.clearInterrupt(MCP_TX0IF);
+				// But remember we are empty
 				txEmpty = true;
 			}
 		} else if (txEmpty) {
 			// Better check if we've got data to send
 			if (pdTRUE == xQueueReceive(canOutQ, &frame, 0)) {
+				txEmpty = false;
 				mcp.enableInterrupt(MCP_TX0IF);
 				mcp.sendMsgBufUnconditional(txBufNo, frame.id, isExtId, frame.dlc, frame.data);
-				txEmpty = false;
 			}
 		}
 	}
