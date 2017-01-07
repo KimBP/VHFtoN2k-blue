@@ -42,6 +42,7 @@ public:
 
 	static void HandleVDM(const tNMEA0183Msg &NMEA0183Msg);
 	static void HandleDPT(const tNMEA0183Msg &NMEA0183Msg);
+	static double to_double(long inp, double precision) { return (inp*precision); };
 
 public:
 	nmea0183Handler();
