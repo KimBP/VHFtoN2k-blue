@@ -1,0 +1,112 @@
+#####################################################
+Example 1:
+
+!AIVDM,1,1,,B,13E`Tn8P00Oo<rbHjWstI?w20D0B,0*1B
+
+#####################################################
+
+# Output from http://rl.se/aivdm
+# of ships in range: 18
+MMSI               : 224011480
+Latitude           : 43.325412°
+Longitude          : -1.921990°
+Speed              : 0.0 knots
+Heading            : 511°         <- Seems wrong
+Course over ground : 317°
+Rate of turn       : -9999°/min
+Navigational status: 8
+Nearest place      : Pasaia, Spain
+
+# Goes to PGN 129038 (1F80E)
+# DataLen 27 =>
+# Frame count: 4 First 3 bits are sequence)
+# 20 1B 00 D8 24 5A 0D E5
+# 21 EE D2 19 33 BA DA FE
+# 22 00 42 D8 00 00 FF FF
+# 23 FF 62 5C 00 00 F8 FF
+
+Payload: (Multibyte parameters in little endian)
+
+00 D8 24 5A 0D E5 EE D2 19 33 BA DA FE 00 42 D9 00 00 FF FF FF 62 5C 00 00 F9 FF
+-- ----------- ----------- ----------- -- ----- ----- -------- ----- ----- -- --
+ID     MMSI      LONG        LAT           COG   SOG   SPARE    HDG   ROT
+
+MMSI (0D5A24D8)   = 224011480
+LONG (19D2EEE5)   = 433254117 (deg, 7 dec) 
+LAT  (FEDABA33)   = -19219916 (deg, 7 dec) - two complement (12545CC)
+COG (D942) = 55618 (radians, 4 dec) => 318,7 degree
+SOG (0000) = 0 (knots, 2 dec)
+HDG (5C62) = 23650 (radians, 4 dec) => 135,5 degree
+
+#######################################
+Example 2:
+
+!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*24 
+#######################################
+
+# Output from http://rl.se/aivdm
+Message sent (UTC) : 17:21:53
+MMSI               : 265547250
+Latitude           : 57.660353°
+Longitude          : 11.832977°
+Speed              : 13.9 knots
+Heading            : 41°
+Course over ground : 40°
+Rate of turn       : -2°/min
+Navigational status: 0
+Nearest place      : Styrsö, Sweden
+
+# Goes to PGN 129038 (1F80E)
+# Datalen 27 =>
+# Frame count: 4 (First 3 bits are sequence)
+# 60 1B 00 F2 ED D3 0F 8D
+# 61 45 5E 22 A7 91 0D 07
+# 62 00 8B 1B 6E 05 FF FF
+# 63 FF F4 1B 00 00 F0 FF
+
+Payload: (Multibyte parameters in little endian)
+
+00 F2 ED D3 0F 8D 45 5E 22 A7 91 0D 07 00 8B 1B 6E 05 FF FF FF F4 1B 00 00 F0 FF
+-- ----------- ----------- ----------- -- ----- ----- -------- ----- ----- -- --
+ID   MMSI         LONG       LAT           COG   SOG   SPARE     HDG  ROT
+
+MMSI (0FD3EDF2) = 265547250
+LONG (225E458D) = 576603533 (deg, 7 dec)
+LAT  (070D91A7) = 118329767 (deg, 7 dec)
+COG  (1B8B) = 7051 (radians, 4 dec) => 40,4 degree
+SOG  (056E) = 1390 (knots, 2 dec)
+HDG  (1BF4) = 7156 (radians, 4 dec) => 41,0 degree
+
+
+#####################################################
+Example 3:
+
+$DPDPT,76.1,1.1,100*79
+#####################################################
+
+# DPT 76.1 m, transducer offset 1.1, max range 100
+# Goes to PGN 128267 (1F50B)
+# Frame count: 1: 03 BA 1D 00 00 4C 04 FF
+#
+03 BA 1D 00 00 4C 04 FF
+-- ----------- ----- --
+ID   Depth      Offs 
+
+Depth (00001DBA) = 7610 (meter, 2 dec)
+Offset (044C)    = 1100 (meter, 3 dec)
+
+03 BA 1D 00 00 4C 04 FF
+-- ----------- ----- --
+ID   Depth      Offs 
+
+Depth (00001DBA) = 7610 (meter, 2 dec)
+Offset (044C)    = 1100 (meter, 3 dec)
+
+03 BA 1D 00 00 4C 04 FF
+-- ----------- ----- --
+ID   Depth      Offs 
+
+Depth (00001DBA) = 7610 (meter, 2 dec)
+Offset (044C)    = 1100 (meter, 3 dec)
+
+
