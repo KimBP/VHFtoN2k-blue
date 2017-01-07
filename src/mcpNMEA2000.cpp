@@ -57,6 +57,7 @@ mcpNMEA2000::mcpNMEA2000()
 	RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA, ENABLE );
 
 	GPIO_InitTypeDef GPIO_InitStructure;
+	GPIO_StructInit(&GPIO_InitStructure);
 	/* Configure GPIO A8 as input for ISR*/
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
@@ -64,6 +65,7 @@ mcpNMEA2000::mcpNMEA2000()
 	GPIO_Init( GPIOA, &GPIO_InitStructure );
 
 	/* Configure  Chip Select for SPI */
+	GPIO_StructInit(&GPIO_InitStructure);
 	GPIO_InitStructure.GPIO_Pin = spiCSpin;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -73,6 +75,7 @@ mcpNMEA2000::mcpNMEA2000()
 	GPIO_EXTILineConfig(GPIO_PortSourceGPIOA, GPIO_PinSource8);
 
 	EXTI_InitTypeDef EXTI_InitStructure;
+	EXTI_StructInit(&EXTI_InitStructure);
 	EXTI_InitStructure.EXTI_Line = EXTI_Line8;
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
@@ -120,6 +123,18 @@ bool mcpNMEA2000::CANOpen()
 	return true;
 }
 
+struct canStat {
+	uint32_t sendCnt;
+	uint32_t isrCnt;
+	uint32_t semCnt;
+	uint32_t txCnt;
+	uint32_t rxCnt;
+	uint32_t txEmpty;
+	uint32_t isrEnable;
+	uint32_t isrDisable;
+	uint32_t lostFrame;
+} canStat;
+
 /* Realization of tNMEA2000 virtual function. Notice that this implementation ignores wait_sent flag.
  * It always wait for frame to be sent.
  * This is considered acceptable because it was called either once for short packages with 'no-wait'
@@ -136,8 +151,10 @@ bool mcpNMEA2000::CANSendFrame(unsigned long id, unsigned char len, const unsign
 
 	if (pdPASS == xQueueSend(canOutQ, &frame, portMAX_DELAY)) {
 		xSemaphoreGive(canIsrSem); // Signal to isrTask there is work to do
+		canStat.sendCnt++;
 		return true;
 	}
+	canStat.lostFrame++;
 
 	return false;
 }
@@ -163,6 +180,7 @@ bool mcpNMEA2000::CANGetFrame(unsigned long &id, unsigned char &len, unsigned ch
 	return false;
 }
 
+
 bool mcpNMEA2000::SendMsg(const tN2kMsg &N2kMsg, int DeviceIndex)
 {
 	bool res;
@@ -186,10 +204,14 @@ void mcpNMEA2000::isrTaskRun()
 	while (1) {
 		xSemaphoreTake(canIsrSem, portMAX_DELAY); // Wait for ISR
 
+		canStat.semCnt++;
 		// Check incoming
 		unsigned char stat = mcp.mcp2515_readStatus();
 
 		if (stat & MCP_STAT_RX0IF) {
+			mcp.clearInterrupt(MCP_RX0IF);
+
+			canStat.rxCnt++;
 			mcp.readMsgUnconditional(rxBufNo); // Ignore result - we'll always have a packet
 			mcp.clearInterrupt(MCP_RX0IF);
 			frame.id = mcp.getCanId();
@@ -203,16 +225,22 @@ void mcpNMEA2000::isrTaskRun()
 			if (pdTRUE == xQueueReceive(canOutQ, &frame, 0)) {
 				// We have data to send
 				mcp.sendMsgBufUnconditional(txBufNo,frame.id, isExtId, frame.dlc, frame.data);
+				canStat.txCnt++;
 			} else {
 				// No data to send - disable TX-Empty interrupt
 				mcp.disableInterrupt(MCP_TX0IF);
 				// But remember we are empty
 				txEmpty = true;
+				canStat.isrDisable++;
 			}
 		} else if (txEmpty) {
+			canStat.txEmpty++;
+
 			// Better check if we've got data to send
 			if (pdTRUE == xQueueReceive(canOutQ, &frame, 0)) {
 				txEmpty = false;
+				canStat.isrEnable++;
+
 				mcp.enableInterrupt(MCP_TX0IF);
 				mcp.sendMsgBufUnconditional(txBufNo, frame.id, isExtId, frame.dlc, frame.data);
 			}
@@ -225,14 +253,13 @@ void mcpNMEA2000::spiCS(uint8_t val)
 	GPIO_WriteBit(const_cast<GPIO_TypeDef*>(spiCSport), spiCSpin, (val) ? Bit_SET : Bit_RESET);
 }
 
-unsigned long extIrqCount;
 void EXTI9_5_IRQHandler(void)
 {
 	portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 	if (EXTI_GetITStatus(EXTI_Line8) != RESET) {
 		// Our interrupt
 		EXTI_ClearITPendingBit(EXTI_Line8);
-		extIrqCount++;
+		canStat.isrCnt++;
 		xSemaphoreGiveFromISR(canIsrSem, &xHigherPriorityTaskWoken);
 	}
 	portEND_SWITCHING_ISR( xHigherPriorityTaskWoken );
