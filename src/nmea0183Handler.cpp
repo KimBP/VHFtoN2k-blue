@@ -89,6 +89,9 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	// Multi packets not supported yet
 	if (pkgCnt != 1) return;
 
+	// AIS expect buf to be '\0' terminated
+	buf[length] = '\0';
+
 	AIS ais_msg(buf, fillBits);
 
 	// Check if supported message
