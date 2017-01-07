@@ -1,0 +1,45 @@
+VHFtoN2k-blue
+
+2016 Copyright (c) Kim Bøndergaard, www.fam-boendergaard.dk  All right reserved.
+
+ Author: Kim Bøndergaard (kim@fam-boendergaard.dk)
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This module is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this module; if not, write to the Free Software
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-
+  1301  USA
+
+
+History:
+
+VHFtoN2k was my first attempt to make an NMEA0183 to NMEA2000 converter
+using a cheap Arduino mini pro. I soon realized this wasn't capable of 
+doing such task and I therefore started looking at the also cheap
+STM32F103 modules available at e.g. ebay
+
+At first my idea was to stay with the Arduino SDK, but I soon realized 
+the STM32F103 wasn't too well supported - at least not when it came to
+3. party libraries.
+
+I further more found the Arduino SDK difficult to work with. 
+Being used to eclipse and the freedom you here have it is difficult to
+go with something that primitive.
+
+Furthermore I missed possibilities for designing in threads because it
+really ease the implementation of even systems so simple like this
+
+Functionality:
+
+Basically the project implements a replacement for an Actisense AIS reader.
+I need to be able to feed my Vulcan-7 NMEA2000 GSP with AIS coming from 
+my NMEA0183 only VHF.
