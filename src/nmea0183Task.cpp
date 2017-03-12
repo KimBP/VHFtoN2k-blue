@@ -25,6 +25,7 @@
 #include <NMEA0183.h>
 
 nmea0183Task::nmea0183Task(msgHdlType msgHdl, void* msgHdlArgs, unsigned long baud)
+: sendQueue(0)
 {
 	nmea0183.Begin(&uart, 0, baud, true);
 	nmea0183.SetMsgHandler(msgHdl, msgHdlArgs);
