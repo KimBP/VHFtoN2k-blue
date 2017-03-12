@@ -113,30 +113,41 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 
 	// Check if supported message
 	uint8_t msgType = ais_msg.get_type();
-	if ( (msgType != 1) && (msgType != 2) && (msgType != 3)) return;
-
 
 	// Forward message in N2K domain
 	// TODO: Act correctly upon Channel - for now always class A
-
-
 	tN2kMsg N2kMsg;
 
-	SetN2kPGN129038(N2kMsg,
-					seqMessageId,
-					static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
-					ais_msg.get_mmsi(),
-					minutesToDeg(to_double(ais_msg.get_longitude(), 1e-04)),
-					minutesToDeg(to_double(ais_msg.get_latitude(), 1e-04)),
-					ais_msg.get_posAccuracy(),
-					ais_msg.get_raim(),
-					millis()/60,
-					DegToRad(to_double(ais_msg.get_COG(),1e-01)),
-					to_double(ais_msg.get_SOG(),1e-01),
-					DegToRad(ais_msg.get_HDG()),
-					ais_msg.get_rot(),
-					static_cast<tN2kAISNavStatus>(ais_msg.get_navStatus()));
-	mcpNMEA2000::getInstance().SendMsg(N2kMsg);
+	switch(msgType) {
+	case 1: // Position Report Class A
+	case 2:
+	case 3:
+	{
+		SetN2kPGN129038(N2kMsg,
+						seqMessageId,
+						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
+						ais_msg.get_mmsi(),
+						minutesToDeg(to_double(ais_msg.get_longitude(), 1e-04)),
+						minutesToDeg(to_double(ais_msg.get_latitude(), 1e-04)),
+						ais_msg.get_posAccuracy(),
+						ais_msg.get_raim(),
+						millis()/60,
+						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
+						to_double(ais_msg.get_SOG(),1e-01),
+						DegToRad(ais_msg.get_HDG()),
+						ais_msg.get_rot(),
+						static_cast<tN2kAISNavStatus>(ais_msg.get_navStatus()));
+		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
+		break;
+	}
+	case 4: // BaseStation Report -
+		break;
+	case 5: // Static and voyage related data
+	{
+
+		break;
+	}
+	}
   }
   delete[] buf;
 }
