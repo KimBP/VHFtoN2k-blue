@@ -26,6 +26,7 @@
 #include <queue.h>
 
 #include <NMEA0183Msg.h>
+#include <VDMStack.h>
 
 /* args must be a pointer to a FreeRTOS queue object to which
  * n2k objects allocated at the heap are pushed
@@ -50,6 +51,7 @@ public:
 
 private:
 	static uint8_t nextSID();
+	static VDMStack vdmStack; // Used for fragmented VDM messages
 };
 
 

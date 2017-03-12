@@ -34,9 +34,11 @@ const struct nmea0183Handler::codeHdl handlers[3] = {
 			{0, 0},
 	};
 
+VDMStack nmea0183Handler::vdmStack(6);
 
 nmea0183Handler::nmea0183Handler()
 {
+
 }
 
 nmea0183Handler::~nmea0183Handler() {
@@ -71,10 +73,11 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
   unsigned int seqMessageId;
   char channel;
   unsigned int length;
-  char buf[60];
+  char* buf;
   unsigned int fillBits;
 
   length = 40;
+  buf = new char [length + 1];
 
   if (NMEA0183ParseVDM_nc(
 		NMEA0183Msg,
@@ -86,8 +89,22 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		buf,
 		fillBits)) {
 
-	// Multi packets not supported yet
-	if (pkgCnt != 1) return;
+	if (pkgCnt > 1) {
+		length = vdmStack.push(pkgCnt,pkgNmb, seqMessageId, length, buf);
+		delete[] buf;
+		if (0 == length) {
+			// Package not complete
+			return;
+		}
+
+		buf = new char [length+1];
+		if (! vdmStack.pop(seqMessageId, buf)) {
+			// Something failed
+			delete[] buf;
+			return;
+		}
+
+	}
 
 	// AIS expect buf to be '\0' terminated
 	buf[length] = '\0';
@@ -121,6 +138,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 					static_cast<tN2kAISNavStatus>(ais_msg.get_navStatus()));
 	mcpNMEA2000::getInstance().SendMsg(N2kMsg);
   }
+  delete[] buf;
 }
 
 void nmea0183Handler::HandleDPT(const tNMEA0183Msg &NMEA0183Msg)
