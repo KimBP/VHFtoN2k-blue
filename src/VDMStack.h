@@ -52,7 +52,7 @@ private:
 
 	struct VDMelement* getStackEntry(unsigned int length);
 	bool isComplete(unsigned int seqMessageId);
-	unsigned int getLength(unsigned int seqMessageId);
+	unsigned int getLength();
 };
 
 #endif /* VDMSTACK_H_ */
