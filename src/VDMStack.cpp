@@ -40,7 +40,7 @@ unsigned int VDMStack::push (
 
 	if (pkgCnt == pkgNmb) {
 		if (isComplete(seqMessageId)) {
-			return getLength(seqMessageId);
+			return getLength();
 		}
 	}
 	pkgNmbOne = stackSize;
@@ -52,7 +52,6 @@ struct VDMStack::VDMelement* VDMStack::getStackEntry(unsigned int length)
 {
 	uint8_t i;
 	unsigned int oldestId = nextId;
-	uint8_t oldestIdx = stackSize;
 	struct VDMelement* pOldest = 0;
 
 	// Find oldest
@@ -130,7 +129,7 @@ bool VDMStack::isComplete(unsigned int seqMessageId)
 	return true;
 }
 
-unsigned int VDMStack::getLength(unsigned int seqMessageId)
+unsigned int VDMStack::getLength()
 {
   unsigned int totalLen = 0;
   uint8_t i = pkgNmbOne;
