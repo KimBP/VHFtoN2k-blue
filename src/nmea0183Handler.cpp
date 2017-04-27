@@ -114,14 +114,11 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	// Convert to N2k message.
 	// See relation between AIS messages and PGN at
 	// http://www.panbo.com/Panbo%20AIS%20over%20NMEA%202000%20Info%20Sheet.pdf
-	uint8_t msgType = ais_msg.get_type();
-
+	enum AIS::Nmea0183AisMessages msgType = ais_msg.get_type();
 	tN2kMsg N2kMsg;
 
 	switch(msgType) {
-	case 1: // Position Report Class A: PGN129038
-	case 2:
-	case 3:
+	case AIS::AIS_MSG_1_2_3_POS_REPORT_CLASS_A:
 	{
 		SetN2kPGN129038(N2kMsg,
 						seqMessageId,
@@ -129,8 +126,8 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_mmsi(),
 						minutesToDeg(to_double(ais_msg.get_latitude(), 1e-04)),
 						minutesToDeg(to_double(ais_msg.get_longitude(), 1e-04)),
-						ais_msg.get_posAccuracy(),
-						ais_msg.get_raim(),
+						ais_msg.get_posAccuracy_flag(),
+						ais_msg.get_raim_flag(),
 						millis()/60,
 						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
 						to_double(ais_msg.get_SOG(),1e-01),
@@ -140,7 +137,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
-	case 5: // Static data, class A: PGN129794
+	case AIS::AIS_MSG_5_STATIC_AND_VOYAGE:
 	{
 		SetN2kPGN129794(N2kMsg,
 						seqMessageId,
@@ -160,12 +157,12 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_destination(),
 						static_cast<tN2kAISVersion>(ais_msg.get_ais_version()),
 						static_cast<tN2kGNSStype>(ais_msg.get_epfd()),
-						static_cast<tN2kAISDTE>(ais_msg.get_dte()),
+						(ais_msg.get_dte_flag() ? N2kaisdte_NotReady : N2kaisdte_Ready),
 	 					N2kaisti_Channel_A_VDL_reception);  // TODO: What does this mean
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
-	case 18: // Position Report Class B: PGN129039
+	case AIS::AIS_MSG_18_CS_POS_REPORT_CLASS_B:
 	{
 		SetN2kPGN129039(N2kMsg,
 						seqMessageId,
@@ -173,8 +170,8 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_mmsi(),
 						minutesToDeg(to_double(ais_msg.get_latitude(), 1e-04)),
 						minutesToDeg(to_double(ais_msg.get_longitude(), 1e-04)),
-						ais_msg.get_posAccuracy(),
-						ais_msg.get_raim(),
+						ais_msg.get_posAccuracy_flag(),
+						ais_msg.get_raim_flag(),
 						millis()/60,
 						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
 						to_double(ais_msg.get_SOG(),1e-01),
@@ -189,10 +186,10 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
-	case 24:
+	case AIS::AIS_MSG_24_STATIC_DATA_REPORT:
 	{
 		switch(ais_msg.get_partno()) {
-		case 0: // Static data, part a, class B: PGN129809
+		case 0: // Part A
 			SetN2kPGN129809(N2kMsg,
 							seqMessageId,
 							static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
@@ -200,7 +197,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 							ais_msg.get_shipname());
 			mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 			break;
-		case 1: // Static data, part b, class B: PGN129810
+		case 1: // Part B
 			SetN2kPGN129810(N2kMsg,
 							seqMessageId,
 							static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
@@ -218,6 +215,8 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		}
 		break;
 	}
+	default:
+		break;
 	}
   }
   delete[] buf;
