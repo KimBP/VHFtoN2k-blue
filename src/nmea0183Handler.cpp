@@ -168,3 +168,28 @@ void nmea0183Handler::HandleDPT(const tNMEA0183Msg &NMEA0183Msg)
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 	}
 }
+
+uint16_t nmea0183Handler::to_date(uint8_t month, uint8_t day)
+{
+	// TODO: Basically the format expected in e.g. EDA of PGM129794 is unknown for know
+	// Guess: day in year with January 1. being day one - ignoring leap years
+	if (month == 0 || day == 0) {
+		return 0;
+	}
+
+	const uint16_t days_to_month[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+
+	return (  day + days_to_month[month-1] );
+}
+
+double nmea0183Handler::to_time(uint8_t hour, uint8_t minute)
+{
+	// TODO: Basically the format expected in e.g. ETA of PGM129794 is unknown for now
+	// Guess: time is in seconds
+	if (hour == 24 || minute == 60) {
+		return 0.0;
+	}
+
+	return ( hour * 60 + minute ) * 60;
+}
+

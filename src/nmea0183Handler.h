@@ -44,6 +44,8 @@ public:
 	static void HandleVDM(const tNMEA0183Msg &NMEA0183Msg);
 	static void HandleDPT(const tNMEA0183Msg &NMEA0183Msg);
 	static double to_double(long inp, double precision) { return (inp*precision); };
+	static uint16_t to_date(uint8_t month, uint8_t day);
+	static double to_time(uint8_t hour, uint8_t minute);
 
 public:
 	nmea0183Handler();
