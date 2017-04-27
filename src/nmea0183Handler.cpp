@@ -111,15 +111,15 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 
 	AIS ais_msg(buf, fillBits);
 
-	// Check if supported message
+	// Convert to N2k message.
+	// See relation between AIS messages and PGN at
+	// http://www.panbo.com/Panbo%20AIS%20over%20NMEA%202000%20Info%20Sheet.pdf
 	uint8_t msgType = ais_msg.get_type();
 
-	// Forward message in N2K domain
-	// TODO: Act correctly upon Channel - for now always class A
 	tN2kMsg N2kMsg;
 
 	switch(msgType) {
-	case 1: // Position Report Class A
+	case 1: // Position Report Class A: PGN129038
 	case 2:
 	case 3:
 	{
@@ -140,9 +140,17 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
-	case 4: // BaseStation Report -
+	case 5: // Static data, class A: PGN129794
+	{
 		break;
-	case 5: // Static and voyage related data
+	}
+	case 18: // Position Report Class B: PGN129039
+	{
+
+		break;
+	}
+	case 24: // Static data, part a, class B: PGN129809
+		 	 // Static data, part b, class B: PGN129810
 	{
 
 		break;
