@@ -142,6 +142,27 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	}
 	case 5: // Static data, class A: PGN129794
 	{
+		SetN2kPGN129794(N2kMsg,
+						seqMessageId,
+						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
+						ais_msg.get_mmsi(),
+						ais_msg.get_imo(),
+						ais_msg.get_callsign(),
+						ais_msg.get_shipname(),
+						ais_msg.get_shiptype(),
+						ais_msg.get_to_bow(),
+						ais_msg.get_to_stern(),
+						ais_msg.get_to_port(),
+						ais_msg.get_to_starboard(),
+						to_date(ais_msg.get_month(),ais_msg.get_day()),
+						to_time(ais_msg.get_hour(),ais_msg.get_minute()),
+						ais_msg.get_draught(),
+						ais_msg.get_destination(),
+						static_cast<tN2kAISVersion>(ais_msg.get_ais_version()),
+						static_cast<tN2kGNSStype>(ais_msg.get_epfd()),
+						static_cast<tN2kAISDTE>(ais_msg.get_dte()),
+	 					N2kaisti_Channel_A_VDL_reception);  // TODO: What does this mean
+		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
 	case 18: // Position Report Class B: PGN129039
