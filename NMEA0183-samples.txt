@@ -29,11 +29,11 @@ Payload: (Multibyte parameters in little endian)
 
 00 D8 24 5A 0D E5 EE D2 19 33 BA DA FE 00 42 D9 00 00 FF FF FF 62 5C 00 00 F9 FF
 -- ----------- ----------- ----------- -- ----- ----- -------- ----- ----- -- --
-ID     MMSI      LONG        LAT           COG   SOG   SPARE    HDG   ROT
+ID     MMSI      LAT          LONG         COG   SOG   SPARE    HDG   ROT
 
 MMSI (0D5A24D8)   = 224011480
-LONG (19D2EEE5)   = 433254117 (deg, 7 dec) 
-LAT  (FEDABA33)   = -19219916 (deg, 7 dec) - two complement (12545CC)
+LAT  (19D2EEE5)   = 433254117 (deg, 7 dec) 
+LONG (FEDABA33)   = -19219916 (deg, 7 dec) - two complement (12545CC)
 COG (D942) = 55618 (radians, 4 dec) => 318,7 degree
 SOG (0000) = 0 (knots, 2 dec)
 HDG (5C62) = 23650 (radians, 4 dec) => 135,5 degree
@@ -68,11 +68,11 @@ Payload: (Multibyte parameters in little endian)
 
 00 F2 ED D3 0F 8D 45 5E 22 A7 91 0D 07 00 8B 1B 6E 05 FF FF FF F4 1B 00 00 F0 FF
 -- ----------- ----------- ----------- -- ----- ----- -------- ----- ----- -- --
-ID   MMSI         LONG       LAT           COG   SOG   SPARE     HDG  ROT
+ID   MMSI         LAT        LONG          COG   SOG   SPARE     HDG  ROT
 
 MMSI (0FD3EDF2) = 265547250
-LONG (225E458D) = 576603533 (deg, 7 dec)
-LAT  (070D91A7) = 118329767 (deg, 7 dec)
+LAT  (225E458D) = 576603533 (deg, 7 dec)
+LONG  (070D91A7) = 118329767 (deg, 7 dec)
 COG  (1B8B) = 7051 (radians, 4 dec) => 40,4 degree
 SOG  (056E) = 1390 (knots, 2 dec)
 HDG  (1BF4) = 7156 (radians, 4 dec) => 41,0 degree
