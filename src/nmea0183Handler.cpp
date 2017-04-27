@@ -189,10 +189,33 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
-	case 24: // Static data, part a, class B: PGN129809
-		 	 // Static data, part b, class B: PGN129810
+	case 24:
 	{
-
+		switch(ais_msg.get_partno()) {
+		case 0: // Static data, part a, class B: PGN129809
+			SetN2kPGN129809(N2kMsg,
+							seqMessageId,
+							static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
+							ais_msg.get_mmsi(),
+							ais_msg.get_shipname());
+			mcpNMEA2000::getInstance().SendMsg(N2kMsg);
+			break;
+		case 1: // Static data, part b, class B: PGN129810
+			SetN2kPGN129810(N2kMsg,
+							seqMessageId,
+							static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
+							ais_msg.get_mmsi(),
+							ais_msg.get_shiptype(),
+							ais_msg.get_vendorid(),
+							ais_msg.get_callsign(),
+							ais_msg.get_to_bow(),
+							ais_msg.get_to_stern(),
+							ais_msg.get_to_port(),
+							ais_msg.get_to_starboard(),
+							ais_msg.get_mothership_mmsi());
+			mcpNMEA2000::getInstance().SendMsg(N2kMsg);
+			break;
+		}
 		break;
 	}
 	}
