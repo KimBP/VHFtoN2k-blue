@@ -167,7 +167,26 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	}
 	case 18: // Position Report Class B: PGN129039
 	{
-
+		SetN2kPGN129039(N2kMsg,
+						seqMessageId,
+						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
+						ais_msg.get_mmsi(),
+						minutesToDeg(to_double(ais_msg.get_latitude(), 1e-04)),
+						minutesToDeg(to_double(ais_msg.get_longitude(), 1e-04)),
+						ais_msg.get_posAccuracy(),
+						ais_msg.get_raim(),
+						millis()/60,
+						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
+						to_double(ais_msg.get_SOG(),1e-01),
+						DegToRad(ais_msg.get_HDG()),
+						(ais_msg.get_cs_flag() ? N2kaisunit_ClassB_CS : N2kaisunit_ClassB_SOTDMA),
+						ais_msg.get_display_flag(),
+						ais_msg.get_dsc_flag(),
+						ais_msg.get_band_flag(),
+						ais_msg.get_msg22_flag(),
+						(ais_msg.get_assigned_flag() ? N2kaismode_Assigned : N2kaismode_Autonomous),
+						true);
+		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
 	case 24: // Static data, part a, class B: PGN129809
