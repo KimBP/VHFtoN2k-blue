@@ -1,0 +1,15 @@
+[submodule "libraries/AIS"]
+	path = libraries/AIS
+	url = git@github.com:KimBP/AIS.git
+[submodule "libraries/CAN_BUS_Shield"]
+	path = libraries/CAN_BUS_Shield
+	url = git@github.com:KimBP/CAN_BUS_Shield.git
+	branch = FreeRTOS
+[submodule "libraries/NMEA0183"]
+	path = libraries/NMEA0183
+	url = git@github.com:KimBP/NMEA0183.git
+	branch = FreeRTOS
+[submodule "libraries/NMEA2000"]
+	path = libraries/NMEA2000
+	url = git@github.com:KimBP/NMEA2000.git
+	branch = FreeRTOS
