@@ -137,6 +137,11 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 		break;
 	}
+	case AIS::AIS_MSG_4_BASE_STATION_REPORT:
+	{
+		// Do nothing for now
+		break;
+	}
 	case AIS::AIS_MSG_5_STATIC_AND_VOYAGE:
 	{
 		SetN2kPGN129794(N2kMsg,
