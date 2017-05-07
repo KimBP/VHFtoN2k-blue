@@ -76,7 +76,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
   char* buf;
   unsigned int fillBits;
 
-  length = 40;
+  length = 80;
   buf = new char [length + 1];
 
   if (NMEA0183ParseVDM_nc(
