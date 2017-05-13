@@ -130,7 +130,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_raim_flag(),
 						millis()/60,
 						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
-						to_double(ais_msg.get_SOG(),1e-01),
+						knotsToms(to_double(ais_msg.get_SOG(),1e-01)),
 						DegToRad(ais_msg.get_HDG()),
 						ais_msg.get_rot(),
 						static_cast<tN2kAISNavStatus>(ais_msg.get_navStatus()));
@@ -179,7 +179,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_raim_flag(),
 						millis()/60,
 						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
-						to_double(ais_msg.get_SOG(),1e-01),
+						knotsToms(to_double(ais_msg.get_SOG(),1e-01)),
 						DegToRad(ais_msg.get_HDG()),
 						(ais_msg.get_cs_flag() ? N2kaisunit_ClassB_CS : N2kaisunit_ClassB_SOTDMA),
 						ais_msg.get_display_flag(),
