@@ -68,6 +68,9 @@ struct VDMStack::VDMelement* VDMStack::getStackEntry(unsigned int length)
 	// Prepare for new data
 	pOldest->length = length;
 	pOldest->buf = new char [length];
+	if (pOldest->buf == 0) {
+		return 0;
+	}
 	pOldest->stackId = nextId;
 	pOldest->nextIdx = stackSize;
 
@@ -84,6 +87,9 @@ void VDMStack::pushFragment(
   	  	char* buf)
 {
 	struct VDMelement* entry = getStackEntry(length);
+	if (entry == 0) {
+		return;
+	}
 	entry->pkgCnt = pkgCnt;
 	entry->pkgNmb = pkgNmb;
 	entry->seqMessageid = seqMessageId;
