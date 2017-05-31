@@ -164,6 +164,9 @@ void print129038(struct can_frame canMsg)
 			printf("\thdg(%04x) : %f\n", hdg, (180/3.1427)*(double)hdg/10000);
 			break;
 		}
+		case PACKET_NOT_COMPLETE: 
+			printf("\t(fragment)\n");
+			break;
 		default:
 			printf("\tError detected\n");
 			break;
@@ -197,6 +200,9 @@ void print129039(struct can_frame canMsg)
 			printf("\thdg(%04x) : %f\n", hdg, (180/3.1427)*(double)hdg/10000);
 			break;
 		}
+		case PACKET_NOT_COMPLETE: 
+			printf("\t(fragment)\n");
+			break;
 		default:
 			printf("\tError detected\n");
 			break;
@@ -208,8 +214,8 @@ void print129794(struct can_frame canMsg)
 	static struct fullpgn* packet;
 
 	if (packet == NULL) {
-		packet = (struct fullpgn*) malloc(sizeof(struct fullpgn) + 49);
-		packet->datalen = 50;
+		packet = (struct fullpgn*) malloc(sizeof(struct fullpgn) + 250);
+		packet->datalen = 251;
 	}
 
 	switch(add_frame(packet, canMsg)) {
@@ -231,6 +237,9 @@ void print129794(struct can_frame canMsg)
 
 			break;
 		}
+		case PACKET_NOT_COMPLETE: 
+			printf("\t(fragment)\n");
+			break;
 		default:
 			printf("\tError detected\n");
 			break;
@@ -259,6 +268,9 @@ void print129809(struct can_frame canMsg)
 
 			break;
 		}
+		case PACKET_NOT_COMPLETE: 
+			printf("\t(fragment)\n");
+			break;
 		default:
 			printf("\tError detected\n");
 			break;
@@ -291,6 +303,9 @@ void print129810(struct can_frame canMsg)
 
 			break;
 		}
+		case PACKET_NOT_COMPLETE: 
+			printf("\t(fragment)\n");
+			break;
 		default:
 			printf("\tError detected\n");
 			break;
