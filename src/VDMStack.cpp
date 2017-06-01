@@ -133,10 +133,16 @@ unsigned int VDMStack::getLength()
 {
   unsigned int totalLen = 0;
   uint8_t i = pkgNmbOne;
-  while (stack[i].nextIdx != stackSize) {
+  // sanity checks
+  if (pkgNmbOne == stackSize) return 0;
+
+  while (1) {
 	  totalLen += stack[i].length;
+	  if (stack[i].nextIdx == stackSize)
+		  return totalLen;
 	  i = stack[i].nextIdx;
   }
+
   return totalLen;
 }
 
