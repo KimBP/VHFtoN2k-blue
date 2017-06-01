@@ -37,21 +37,23 @@ const struct nmea0183Handler::codeHdl handlers[3] = {
 
 VDMStack nmea0183Handler::vdmStack(6);
 
-nmea0183Handler::nmea0183Handler()
-{
-
-}
-
 struct nmeaDebug {
 	unsigned int total;
-	unsigned int bad;
-	unsigned int vdm;
-	unsigned int parseErr;
-	unsigned int single;
 	unsigned int multi;
-	unsigned int popErr;
-	unsigned int types[AIS::AIS_MSG_MAX+1];
+//	struct {
+//		unsigned char packetId;
+//		unsigned short heapfree;
+//	} heapdbg[10];
+	//unsigned short heapfree[25];
 } nmeaDebug;
+
+
+nmea0183Handler::nmea0183Handler()
+{
+	//nmeaDebug.heapfree[0] = xPortGetFreeHeapSize();
+//	nmeaDebug.heapdbg[0].packetId = 0;
+//	nmeaDebug.heapdbg[0].heapfree = xPortGetFreeHeapSize();
+}
 
 
 nmea0183Handler::~nmea0183Handler() {
@@ -68,11 +70,29 @@ void nmea0183HandlerCb(const tNMEA0183Msg &NMEA0183Msg, void* args)
 	for (unsigned int i=0; ; i++)
 	{
 		if (handlers[i].hdl == 0) {
-			nmeaDebug.bad++;
+			//nmeaDebug.bad++;
 			return;
 		}
 		if (NMEA0183Msg.IsMessageCode(handlers[i].code)) {
 			handlers[i].hdl(NMEA0183Msg);
+//			static int idx = 0;
+//			const int toCheck = 10;
+//			short heapfree = xPortGetFreeHeapSize();
+//			if (heapfree != nmeaDebug.heapdbg[idx].heapfree) {
+//				idx++;
+//				nmeaDebug.heapdbg[idx].heapfree = heapfree;
+//				nmeaDebug.heapdbg[idx].packetId = nmeaDebug.total;
+//			}
+//			if (idx == toCheck) {
+//				trace_printf("dbg done");
+//			}
+
+//			if (nmeaDebug.total <  toCheck && nmeaDebug.total % (toCheck / 25) == 0) {
+//				nmeaDebug.heapfree[nmeaDebug.total / (toCheck / 25)] = xPortGetFreeHeapSize();
+//			}
+//			if (nmeaDebug.total == toCheck) {
+//				trace_printf("Pause");
+//			}
 			return;
 		}
 	}
@@ -98,7 +118,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
   length = 80;
   buf = new char [length + 1];
 
-  nmeaDebug.vdm++;
+  //nmeaDebug.vdm++;
 
   if (NMEA0183ParseVDM_nc(
 		NMEA0183Msg,
@@ -122,13 +142,13 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		buf = new char [length+1];
 		if (! vdmStack.pop(seqMessageId, buf)) {
 			// Something failed
-			nmeaDebug.popErr++;
+			//nmeaDebug.popErr++;
 			delete[] buf;
 			return;
 		}
 
 	} else {
-		nmeaDebug.single++;
+		//nmeaDebug.single++;
 	}
 
 	// AIS expect buf to be '\0' terminated
@@ -145,7 +165,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	switch(msgType) {
 	case AIS::AIS_MSG_1_2_3_POS_REPORT_CLASS_A:
 	{
-		nmeaDebug.types[0]++;
+		//nmeaDebug.types[0]++;
 		SetN2kPGN129038(N2kMsg,
 						seqMessageId,
 						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
@@ -165,13 +185,13 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	}
 	case AIS::AIS_MSG_4_BASE_STATION_REPORT:
 	{
-		nmeaDebug.types[1]++;
+		//nmeaDebug.types[1]++;
 		// Do nothing for now
 		break;
 	}
 	case AIS::AIS_MSG_5_STATIC_AND_VOYAGE:
 	{
-		nmeaDebug.types[2]++;
+		//nmeaDebug.types[2]++;
 
 		SetN2kPGN129794(N2kMsg,
 						seqMessageId,
@@ -198,7 +218,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	}
 	case AIS::AIS_MSG_18_CS_POS_REPORT_CLASS_B:
 	{
-		nmeaDebug.types[3]++;
+		//nmeaDebug.types[3]++;
 		SetN2kPGN129039(N2kMsg,
 						seqMessageId,
 						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
@@ -223,7 +243,7 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	}
 	case AIS::AIS_MSG_24_STATIC_DATA_REPORT:
 	{
-		nmeaDebug.types[4]++;
+		//nmeaDebug.types[4]++;
 		switch(ais_msg.get_partno()) {
 		case 0: // Part A
 			SetN2kPGN129809(N2kMsg,
@@ -252,12 +272,12 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 		break;
 	}
 	default:
-		nmeaDebug.types[5]++;
+		//nmeaDebug.types[5]++;
 
 		break;
 	}
   } else {
-	  nmeaDebug.parseErr++;
+	 // nmeaDebug.parseErr++;
   }
 
   delete[] buf;
