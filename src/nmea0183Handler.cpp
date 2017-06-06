@@ -28,6 +28,7 @@
 #include <N2kMessages.h>
 #include <mcpNMEA2000.h>
 
+
 const struct nmea0183Handler::codeHdl handlers[3] = {
 			{"VDM", nmea0183Handler::HandleVDM },
 			{"DPT", nmea0183Handler::HandleDPT },
@@ -120,6 +121,13 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	switch(msgType) {
 	case AIS::AIS_MSG_1_2_3_POS_REPORT_CLASS_A:
 	{
+		uint16_t COG = ais_msg.get_COG();
+		uint16_t HDG = ais_msg.get_HDG();
+
+		if (HDG == VDM_HDG_UNDEFINED) {
+			// Use COG
+			HDG = COG/10;
+		}
 		SetN2kPGN129038(N2kMsg,
 						seqMessageId,
 						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
@@ -129,9 +137,9 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_posAccuracy_flag(),
 						ais_msg.get_raim_flag(),
 						millis()/60,
-						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
+						DegToRad(to_double(COG,1e-01)),
 						knotsToms(to_double(ais_msg.get_SOG(),1e-01)),
-						DegToRad(ais_msg.get_HDG()),
+						DegToRad(HDG),
 						ais_msg.get_rot(),
 						static_cast<tN2kAISNavStatus>(ais_msg.get_navStatus()));
 		mcpNMEA2000::getInstance().SendMsg(N2kMsg);
@@ -169,6 +177,13 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 	}
 	case AIS::AIS_MSG_18_CS_POS_REPORT_CLASS_B:
 	{
+		uint16_t COG = ais_msg.get_COG();
+		uint16_t HDG = ais_msg.get_HDG();
+
+		if (HDG == VDM_HDG_UNDEFINED) {
+			// Use COG
+			HDG = COG/10;
+		}
 		SetN2kPGN129039(N2kMsg,
 						seqMessageId,
 						static_cast<tN2kAISRepeat>(ais_msg.get_repeat()),
@@ -178,9 +193,9 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_posAccuracy_flag(),
 						ais_msg.get_raim_flag(),
 						millis()/60,
-						DegToRad(to_double(ais_msg.get_COG(),1e-01)),
+						DegToRad(to_double(COG,1e-01)),
 						knotsToms(to_double(ais_msg.get_SOG(),1e-01)),
-						DegToRad(ais_msg.get_HDG()),
+						DegToRad(HDG),
 						(ais_msg.get_cs_flag() ? N2kaisunit_ClassB_CS : N2kaisunit_ClassB_SOTDMA),
 						ais_msg.get_display_flag(),
 						ais_msg.get_dsc_flag(),

@@ -54,6 +54,8 @@ public:
 private:
 	static uint8_t nextSID();
 	static VDMStack vdmStack; // Used for fragmented VDM messages
+
+	static const uint16_t VDM_HDG_UNDEFINED = 511;
 };
 
 
