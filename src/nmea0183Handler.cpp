@@ -152,10 +152,10 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 						ais_msg.get_callsign(),
 						ais_msg.get_shipname(),
 						ais_msg.get_shiptype(),
-						ais_msg.get_to_bow(),
-						ais_msg.get_to_stern(),
-						ais_msg.get_to_port(),
+						ais_msg.get_to_bow() + ais_msg.get_to_stern(),
+						ais_msg.get_to_port() + ais_msg.get_to_starboard(),
 						ais_msg.get_to_starboard(),
+						ais_msg.get_to_bow(),
 						to_date(ais_msg.get_month(),ais_msg.get_day()),
 						to_time(ais_msg.get_hour(),ais_msg.get_minute()),
 						ais_msg.get_draught(),
@@ -210,10 +210,10 @@ void nmea0183Handler::HandleVDM(const tNMEA0183Msg &NMEA0183Msg)
 							ais_msg.get_shiptype(),
 							ais_msg.get_vendorid(),
 							ais_msg.get_callsign(),
-							ais_msg.get_to_bow(),
-							ais_msg.get_to_stern(),
-							ais_msg.get_to_port(),
+							ais_msg.get_to_bow() + ais_msg.get_to_stern(),
+							ais_msg.get_to_port() + ais_msg.get_to_starboard(),
 							ais_msg.get_to_starboard(),
+							ais_msg.get_to_bow(),
 							ais_msg.get_mothership_mmsi());
 			mcpNMEA2000::getInstance().SendMsg(N2kMsg);
 			break;
