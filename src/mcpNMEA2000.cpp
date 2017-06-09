@@ -33,8 +33,8 @@ extern "C" void EXTI9_5_IRQHandler(void);
 /* Semaphore common between mcpNMEA2000 object and ISR routine */
 static SemaphoreHandle_t canIsrSem;
 
-const GPIO_TypeDef* mcpNMEA2000::spiCSport = static_cast<const GPIO_TypeDef*>(GPIOB);
-const uint16_t mcpNMEA2000::spiCSpin = GPIO_Pin_7;
+const GPIO_TypeDef* mcpNMEA2000::spiCSport = static_cast<const GPIO_TypeDef*>(GPIOA);
+const uint16_t mcpNMEA2000::spiCSpin = GPIO_Pin_11;
 
 mcpNMEA2000& mcpNMEA2000::getInstance()
 {
