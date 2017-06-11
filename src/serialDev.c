@@ -124,17 +124,20 @@ xComPortHandle xSerialPortInitMinimal( unsigned long ulWantedBaud, unsigned port
 		/* Enable USART1 clock */
 		RCC_APB2PeriphClockCmd( RCC_APB2Periph_USART1 | RCC_APB2Periph_GPIOA, ENABLE );	
 
-		/* Configure USART1 Rx (PA10) as input floating */
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+		/* Configure USART1 Rx alternate pin (PB7) as input floating */
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-		GPIO_Init( GPIOA, &GPIO_InitStructure );
+		GPIO_Init( GPIOB, &GPIO_InitStructure );
 		
-		/* Configure USART1 Tx (PA9) as alternate function push-pull */
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+		/* Configure USART1 Tx alternate (PB6) as function push-pull */
+		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
 		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-		GPIO_Init( GPIOA, &GPIO_InitStructure );
+		GPIO_Init( GPIOB, &GPIO_InitStructure );
+
+		/* Remap USART1 */
+		GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);
 
 		USART_InitStructure.USART_BaudRate = ulWantedBaud;
 		USART_InitStructure.USART_WordLength = USART_WordLength_8b;
